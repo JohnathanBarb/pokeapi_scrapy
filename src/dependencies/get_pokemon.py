@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status
-from object_id import get_object_id
+from src.dependencies.object_id import get_object_id
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.databases.database import get_database
