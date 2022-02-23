@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.dependencies.object_id import get_object_id
-from src.dependencies.get_pokemon import get_pokemon_or_404
+from src.dependencies.get_pokemon import (
+    get_pokemon_or_404, get_pokemons_or_404)
 from src.dependencies.pagination import pagination
 
 from src.models.pokemon import (
@@ -27,9 +28,9 @@ async def list_pokemon(
     query = database['pokemons'].find(
         {}, skip=skip, limit=limit)
     
-    results = [PokemonDB(**raw_post) async for raw_post in query]
+    pokemons = [PokemonDB(**raw_pokemon) async for raw_pokemon in query]
 
-    return results
+    return pokemons
 
 
 @router.post('/')
@@ -44,3 +45,24 @@ async def create_pokemon(
     pokemon_db = await get_pokemon_or_404(pokemon_db.id, database)
 
     return pokemon_db
+
+
+@router.post('/many')
+async def create_pokemons(
+    pokemons: List[PokemonCreate],
+    database: AsyncIOMotorClient = Depends(get_database),
+) -> List[PokemonDB]:
+    pokemons_db = [PokemonDB(**pokemon.dict()) for pokemon in pokemons]
+    
+    await database['pokemons'].insert_many(
+        [pokemon.dict(by_alias=True) for pokemon in pokemons_db]
+    )
+
+    pokemons_db = await get_pokemons_or_404(
+        [pokemon.dict(
+            by_alias=True)['_id'] for pokemon in pokemons_db],
+        database,
+    )
+    
+
+    return pokemons_db
