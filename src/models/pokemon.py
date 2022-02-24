@@ -57,3 +57,7 @@ class PokemonPartialUpdate(BaseModel):
     types: Optional[List[str]]
     stats: Optional[List[Stat]]
     moves: Optional[List[str]]
+
+
+class PokemonBasicDB(MongoBaseModel):
+    name: str    

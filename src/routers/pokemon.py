@@ -10,7 +10,7 @@ from src.dependencies.get_pokemon import (
 from src.dependencies.pagination import pagination
 
 from src.models.pokemon import (
-    PokemonDB, PokemonCreate)
+    PokemonDB, PokemonCreate, PokemonBasicDB)
 
 from src.databases.database import (
     get_database, database)
@@ -23,13 +23,13 @@ router = APIRouter()
 async def list_pokemon(
     pagination: pagination = Depends(pagination),
     database: AsyncIOMotorClient = Depends(get_database),
-) -> List[PokemonDB]:
+) -> List[PokemonBasicDB]:
     skip, limit = pagination
     query = database['pokemons'].find(
         {}, skip=skip, limit=limit)
     
     pokemons = [
-        PokemonDB(**raw_pokemon) async for raw_pokemon in query
+        PokemonBasicDB(**raw_pokemon) async for raw_pokemon in query
     ]
 
     return pokemons
