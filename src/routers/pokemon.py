@@ -10,7 +10,7 @@ from src.dependencies.get_pokemon import (
 from src.dependencies.pagination import pagination
 
 from src.models.pokemon import (
-    PokemonDB, PokemonCreate, PokemonBasicDB)
+    PokemonDB, PokemonCreate, PokemonBasicDB, PokemonPartialUpdate)
 
 from src.databases.database import (
     get_database, database)
@@ -87,3 +87,20 @@ async def delete_pokemons(
     database: AsyncIOMotorClient = Depends(get_database)
 ):
     await database['pokemons'].delete_many({})
+
+
+@router.patch('/{id}', response_model=PokemonDB)
+async def update_pokemon(
+    pokemon_update: PokemonPartialUpdate,
+    pokemon: PokemonDB = Depends(get_pokemon_or_404),
+    database: AsyncIOMotorClient = Depends(get_database),
+) -> PokemonDB:
+
+    await database['pokemons'].update_one(
+        {'_id': pokemon.id},
+        {'$set': pokemon_update.dict(exclude_unset=True)}
+    )
+
+    pokemon_db = await get_pokemon_or_404(pokemon.id, database)
+
+    return pokemon_db
