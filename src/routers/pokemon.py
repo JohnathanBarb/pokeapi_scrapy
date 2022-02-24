@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -65,3 +65,18 @@ async def create_pokemons(
     )
     
     return pokemons_db
+
+
+@router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_pokemon(
+    pokemon: PokemonDB = Depends(get_pokemon_or_404),
+    database: AsyncIOMotorClient = Depends(get_database)
+):
+    await database['pokemons'].delete_one({'_id': pokemon.id})
+
+
+@router.delete('/', status_code=status.HTTP_204_NO_CONTENT)
+async def delete_pokemons(
+    database: AsyncIOMotorClient = Depends(get_database)
+):
+    await database['pokemons'].delete_many({})
