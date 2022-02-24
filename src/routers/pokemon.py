@@ -28,10 +28,17 @@ async def list_pokemon(
     query = database['pokemons'].find(
         {}, skip=skip, limit=limit)
     
-    pokemons = [PokemonDB(**raw_pokemon) async for raw_pokemon in query]
+    pokemons = [
+        PokemonDB(**raw_pokemon) async for raw_pokemon in query
+    ]
 
     return pokemons
 
+@router.get('/{id}')
+async def get_pokemon(
+    pokemon: PokemonDB = Depends(get_pokemon_or_404),
+) -> PokemonDB:
+    return pokemon
 
 @router.post('/')
 async def create_pokemon(
