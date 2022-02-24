@@ -64,5 +64,4 @@ async def create_pokemons(
         database,
     )
     
-
     return pokemons_db

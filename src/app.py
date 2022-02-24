@@ -7,5 +7,7 @@ app.include_router(pokemon.router, prefix='/pokemon')
 
 @app.get('/')
 async def root():
-    return {'message': 'Welcome to PokeAPI Scrapy madded by Johnathan Barbosa'}
-
+    return {
+        'message':
+            'Welcome to PokeAPI Scrapy madded by Johnathan Barbosa'
+    }
