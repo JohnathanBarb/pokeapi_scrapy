@@ -11,13 +11,13 @@ The FastAPI provides a documentation about the API created using it, it's locate
 
 ## Dependency
 
-For run this application, you gonna need docker and docker-compose.  
+To run this application, you're going to need docker and docker-compose.  
 If you don't have one of these, follow the respective guide:
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker-Compose](https://docs.docker.com/compose/install/)
 
-## Development
+## Running
 
 With the previously listed dependencies installed and configurated correctly, clone the repository and start the application
 
