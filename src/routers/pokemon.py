@@ -4,16 +4,13 @@ from fastapi import APIRouter, Depends, status
 
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from src.dependencies.object_id import get_object_id
 from src.dependencies.get_pokemon import (
-    get_pokemon_or_404, get_pokemons_or_404)
-from src.dependencies.pagination import pagination
+    get_pokemon_or_404, get_pokemons_or_404, get_pokemons)
 
 from src.models.pokemon import (
     PokemonDB, PokemonCreate, PokemonBasicDB, PokemonPartialUpdate)
 
-from src.databases.database import (
-    get_database, database)
+from src.databases.database import get_poke_database
 
 
 router = APIRouter()
@@ -21,17 +18,8 @@ router = APIRouter()
 
 @router.get('/', summary="Get a List of Pokemons")
 async def list_pokemon(
-    pagination: pagination = Depends(pagination),
-    database: AsyncIOMotorClient = Depends(get_database),
+    pokemons: List[PokemonBasicDB] = Depends(get_pokemons)
 ) -> List[PokemonBasicDB]:
-    skip, limit = pagination
-    query = database['pokemons'].find(
-        {}, skip=skip, limit=limit)
-    
-    pokemons = [
-        PokemonBasicDB(**raw_pokemon) async for raw_pokemon in query
-    ]
-
     return pokemons
 
 @router.get('/{id}', summary="Get a Pokemon detail")
@@ -43,7 +31,7 @@ async def get_pokemon(
 @router.post('/', summary="Create a Pokemon")
 async def create_pokemon(
     pokemon: PokemonCreate,
-    database: AsyncIOMotorClient = Depends(get_database),
+    database: AsyncIOMotorClient = Depends(get_poke_database),
 ) -> PokemonDB:
     """
     Create a Pokemon with all the required information
@@ -51,7 +39,7 @@ async def create_pokemon(
 
     pokemon_db = PokemonDB(**pokemon.dict())
 
-    await database['pokemons'].insert_one(pokemon_db.dict(by_alias=True))
+    await database.insert_one(pokemon_db.dict(by_alias=True))
 
     pokemon_db = await get_pokemon_or_404(pokemon_db.id, database)
 
@@ -61,7 +49,7 @@ async def create_pokemon(
 @router.post('/many', summary="Create multiples Pokemons")
 async def create_pokemons(
     pokemons: List[PokemonCreate],
-    database: AsyncIOMotorClient = Depends(get_database),
+    database: AsyncIOMotorClient = Depends(get_poke_database),
 ) -> List[PokemonDB]:
     """
     Create Pokemons with all the required information in a list.
@@ -70,7 +58,7 @@ async def create_pokemons(
 
     pokemons_db = [PokemonDB(**pokemon.dict()) for pokemon in pokemons]
     
-    await database['pokemons'].insert_many(
+    await database.insert_many(
         [pokemon.dict(by_alias=True) for pokemon in pokemons_db]
     )
 
@@ -88,18 +76,18 @@ async def create_pokemons(
     summary="Delete a Pokemon")
 async def delete_pokemon(
     pokemon: PokemonDB = Depends(get_pokemon_or_404),
-    database: AsyncIOMotorClient = Depends(get_database)
+    database: AsyncIOMotorClient = Depends(get_poke_database)
 ):
-    await database['pokemons'].delete_one({'_id': pokemon.id})
+    await database.delete_one({'_id': pokemon.id})
 
 
 @router.delete('/', 
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete all Pokemons")
 async def delete_pokemons(
-    database: AsyncIOMotorClient = Depends(get_database)
+    database: AsyncIOMotorClient = Depends(get_poke_database)
 ):
-    await database['pokemons'].delete_many({})
+    await database.delete_many({})
 
 
 @router.patch('/{id}', 
@@ -108,9 +96,9 @@ async def delete_pokemons(
 async def update_pokemon(
     pokemon_update: PokemonPartialUpdate,
     pokemon: PokemonDB = Depends(get_pokemon_or_404),
-    database: AsyncIOMotorClient = Depends(get_database),
+    database: AsyncIOMotorClient = Depends(get_poke_database),
 ) -> PokemonDB:
-    await database['pokemons'].update_one(
+    await database.update_one(
         {'_id': pokemon.id},
         {'$set': pokemon_update.dict(exclude_unset=True)}
     )

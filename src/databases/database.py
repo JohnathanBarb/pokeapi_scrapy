@@ -12,3 +12,6 @@ database = motor_client['pokeapi']
 
 def get_database() -> AsyncIOMotorClient:
     return database
+
+def get_poke_database() -> AsyncIOMotorClient:
+    return database['pokemons']
