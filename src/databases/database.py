@@ -1,8 +1,13 @@
+import os
 from motor.motor_asyncio import (
     AsyncIOMotorClient
 )
 
-motor_client = AsyncIOMotorClient('mongodb://mongoadmin:secret@localhost:27888/?authSource=admin')
+username = os.getenv('MONGO_INITDB_ROOT_USERNAME')
+password = os.getenv('MONGO_INITDB_ROOT_PASSWORD')
+
+motor_client = AsyncIOMotorClient(
+    f'mongodb://{username}:{password}@mongodb:27017/?authSource=admin')
 database = motor_client['pokeapi']
 
 def get_database() -> AsyncIOMotorClient:
