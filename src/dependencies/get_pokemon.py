@@ -4,6 +4,7 @@ from src.dependencies.object_id import (
     get_object_id, get_objects_id
 )
 from src.dependencies.pagination import pagination
+from src.dependencies.pokemon_type import poke_type
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from src.databases.database import get_poke_database
@@ -39,10 +40,11 @@ async def get_pokemons_or_404(
 
 async def get_pokemons(
     database: AsyncIOMotorDatabase = Depends(get_poke_database),
-    pagination: pagination = Depends(pagination)
+    pagination: pagination = Depends(pagination),
+    poke_type: poke_type = Depends(poke_type),
 ) -> List[PokemonBasicDB]:
     skip, limit = pagination
     query = database.find(
-        {}, skip=skip, limit=limit)
+        poke_type, skip=skip, limit=limit)
 
     return [PokemonBasicDB(**raw_pokemon) async for raw_pokemon in query]
