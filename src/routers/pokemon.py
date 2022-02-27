@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.dependencies.get_pokemon import (
     get_pokemon_or_404, get_pokemons_or_404, get_pokemons)
-
+from src.dependencies.api_token import api_token
 from src.models.pokemon import (
     PokemonDB, PokemonCreate, PokemonBasicDB, PokemonPartialUpdate)
 
@@ -83,6 +83,7 @@ async def delete_pokemon(
 
 @router.delete('/', 
     status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(api_token)],
     summary="Delete all Pokemons")
 async def delete_pokemons(
     database: AsyncIOMotorClient = Depends(get_poke_database)
