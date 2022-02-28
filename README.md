@@ -28,6 +28,9 @@ git clone git@github.com:JohnathanBarb/pokeapi_scrapy.git
 # going to cloned directory
 cd pokeapi_scrapy
 
+# copy the sample.env to a .env file and change the environment variables
+cp sample.env .env
+
 # running the application with docker-compose in detach mode
 docker-compose up --build -d
 
