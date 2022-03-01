@@ -12,4 +12,4 @@ async def root():
     }
 
 
-app.include_router(pokemon.router, prefix='/pokemon', tags=['Pokemon'])
+app.include_router(pokemon.router, prefix='/pokemons', tags=['Pokemon'])

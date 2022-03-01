@@ -10,7 +10,7 @@ from src.models.pokemon import PokemonCreate
 
 headers = {'Content-Type': 'application/json', 'Accept':'application/json'}
 url = 'https://pokeapi.co/api/v2/pokemon/?offset=0&limit=30'
-url_post = 'http://localhost:8080/pokemon/many'
+url_post = 'http://localhost:8080/pokemons/many'
 
 while True:
     print(f'requesting {url}')
