@@ -57,17 +57,6 @@ class TestPostPokemon:
         self,
         test_client: httpx.AsyncClient,
     ):
-        data = PokemonDB(
-            name="John1",
-            height=185,
-            weight=100,
-            types=['human'],
-            stats=[
-                Stat(name='attack', base_stat=10),
-                Stat(name='defense', base_stat=10)
-            ],
-            moves=['move', 'code']
-        )
         response = await test_client.post(
             '/pokemons/',
             data='{"name": "poke_test", "height": 10}'
