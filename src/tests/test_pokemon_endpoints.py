@@ -37,6 +37,7 @@ class TestGetPokemon:
 
         assert json['detail'] == "Not Found"
 
+
     async def test_existing(
         self,
         test_client: httpx.AsyncClient,
@@ -68,6 +69,7 @@ class TestPostPokemon:
 
         assert json['detail'][0]['msg'] == "field required"
     
+
     async def test_with_correct_data(
         self,
         test_client: httpx.AsyncClient,
@@ -94,3 +96,33 @@ class TestPostPokemon:
         json = response.json()
 
         assert json['name'] == data.name
+
+
+@pytest.mark.asyncio
+class TestPutPokemon:
+    async def test_patch_with_not_existing_pokemon(
+        self,
+        test_client: httpx.AsyncClient
+    ):
+        id = '321532fdwfdsa'
+        response = await test_client.patch(
+            f'/pokemons/{id}',
+            content='{"name": "poke_test", "height": 10}')
+        
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+    
+
+    async def test_patch_pokemon_correct(
+        self,
+        test_client: httpx.AsyncClient,
+        initial_pokemons: List[PokemonDB]
+    ):
+        response = await test_client.patch(
+            f'/pokemons/{initial_pokemons[0].id}',
+            content='{"name": "poke_test", "height": 10}')
+        
+        assert response.status_code == status.HTTP_200_OK
+
+        json = response.json()
+
+        assert json['name'] == 'poke_test'
