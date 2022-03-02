@@ -104,7 +104,7 @@ class TestPutPokemon:
         self,
         test_client: httpx.AsyncClient
     ):
-        id = '321532fdwfdsa'
+        id = 'not-valid-objectid'
         response = await test_client.patch(
             f'/pokemons/{id}',
             content='{"name": "poke_test", "height": 10}')
@@ -126,3 +126,16 @@ class TestPutPokemon:
         json = response.json()
 
         assert json['name'] == 'poke_test'
+
+@pytest.mark.asyncio
+class TestDeletePokemon:
+    async def test_delete_a_not_existing_pokemon(
+        self,
+        test_client: httpx.AsyncClient
+    ):
+        id = 'not-valid-objectid'
+        response = await test_client.delete(
+            f'/pokemons/{id}')
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
