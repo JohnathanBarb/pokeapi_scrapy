@@ -152,3 +152,47 @@ class TestDeletePokemon:
         )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+@pytest.mark.asyncio
+class TestDeleteAllPokemon:
+    async def test_delete_all_poke_without_apikey(
+        self,
+        test_client: httpx.AsyncClient,
+        initial_pokemons: List[PokemonDB],
+    ):
+        response = await test_client.delete(
+            '/pokemons/'
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+        json = response.json()
+        
+        assert json['detail'] == 'Not authenticated'
+    
+    async def test_delete_all_poke_with_wrong_apikey(
+        self,
+        test_client: httpx.AsyncClient,
+        initial_pokemons: List[PokemonDB],
+    ):
+        headers = {'Token': 'NOT_REAL_API_KEY'}
+        response = await test_client.delete(
+            '/pokemons/',
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_delete_all_poke_corret_apikey(
+        self,
+        test_client: httpx.AsyncClient,
+        initial_pokemons: List[PokemonDB],
+    ):
+        headers = {'Token': 'JUST_FOR_TEST'}
+        response = await test_client.delete(
+            '/pokemons/',
+            headers=headers,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
