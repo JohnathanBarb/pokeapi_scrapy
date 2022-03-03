@@ -16,6 +16,7 @@ async def test_home(
     assert response.status_code == status.HTTP_200_OK
 
     json = response.json()
+
     assert json == {
         'message':
             'Welcome to PokeAPI Scrapy madded by Johnathan Barbosa'
@@ -127,6 +128,7 @@ class TestPutPokemon:
 
         assert json['name'] == 'poke_test'
 
+
 @pytest.mark.asyncio
 class TestDeletePokemon:
     async def test_delete_a_not_existing_pokemon(
@@ -139,3 +141,14 @@ class TestDeletePokemon:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
+
+    async def test_delete_a_existing_pokemon(
+        self,
+        test_client: httpx.AsyncClient,
+        initial_pokemons: List[PokemonDB],
+    ):
+        response = await test_client.delete(
+            f'/pokemons/{initial_pokemons[0].id}'
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
