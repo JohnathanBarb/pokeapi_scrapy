@@ -36,6 +36,9 @@ docker-compose up --build -d
 
 # if necessary, to make a scrapy of the pokemons of PokeAPI
 docker-compose exec web python scrapy_project/main.py
+
+# to run the tests, use
+docker-compose exec web pytest
 ```
 
 ## Author
