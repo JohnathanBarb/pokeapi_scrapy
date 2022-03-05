@@ -3,8 +3,10 @@ import pytest, httpx
 
 from fastapi import status
 from src.models.pokemon import PokemonDB, Stat
+from src.dependencies.api_token import API_TOKEN
 
 from src.tests.conftest import test_client, initial_pokemons
+
 
 
 @pytest.mark.asyncio
@@ -189,7 +191,7 @@ class TestDeleteAllPokemon:
         test_client: httpx.AsyncClient,
         initial_pokemons: List[PokemonDB],
     ):
-        headers = {'Token': 'JUST_FOR_TEST'}
+        headers = {'Token': API_TOKEN}
         response = await test_client.delete(
             '/pokemons/',
             headers=headers,
